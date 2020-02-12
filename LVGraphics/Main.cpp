@@ -6,11 +6,14 @@
 #include <sstream>
 #include"camera.h"
 #include <iostream>
-
+#include "Mesh.h"
+#include "OBJMesh.h"
 
 using uint = unsigned int;
 glm::vec4 HSVtoColor(float a_hue, float a_saturation = 1.0f, float a_value = 1.0f);
 
+	GLfloat deltatime = 0.0f;
+	GLfloat lastTime = 0.0f;
 
 int main()
 {
@@ -39,57 +42,67 @@ int main()
 	printf("GL: %i.%i\n", major, minor);
 
 	//mesh data
-	glm::vec3 verticies[] =
-	{
-		//back
-		glm::vec3(-0.5f, 0.5f, 0.0f),
-		glm::vec3(-0.5f, -0.5f, 0.0f),
-	//	glm::vec3(0.5f, 0.5f, 0.0f),
-		glm::vec3(0.5f, 0.5f, 0.0f),
+	//glm::vec3 verticies[] =
+	//{
+	//	//back
+	//	glm::vec3(-0.5f, 0.5f, 0.0f),
 	//	glm::vec3(-0.5f, -0.5f, 0.0f),
-		glm::vec3(0.5f, -0.5f, 0.0f)
-		//front
-		/*glm::vec3(-0.5f, 0.5f, -1.0f),
-		glm::vec3(0.5f, 0.5f, -1.0f),
-		glm::vec3(-0.5f, -0.5f, -1.0f),
-		glm::vec3(0.5f, 0.5f, -1.0f),
-		glm::vec3(-0.5f, -0.5f, -1.0f),
-		glm::vec3(0.5f, -0.5f, -1.0f)*/
-		//this is not a square
-		//front
-		/*glm::vec3(-1.0f, -1.0f, 1.0f),
-		glm::vec3(1.0f, -1.0f, 1.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		glm::vec3(-1.0f, 1.0f, 1.0f),
-		//back
-		glm::vec3(-1.0f, -1.0f, -1.0f),
-		glm::vec3(1.0f, -1.0f, -1.0f),
-		glm::vec3(1.0f, 1.0f, -1.0f),
-		glm::vec3(-1.0f, 1.0f, -1.0f),*/
+	////	glm::vec3(0.5f, 0.5f, 0.0f),
+	//	glm::vec3(0.5f, 0.5f, 0.0f),
+	////	glm::vec3(-0.5f, -0.5f, 0.0f),
+	//	glm::vec3(0.5f, -0.5f, 0.0f)
+	////	//front
+	////	/*glm::vec3(-0.5f, 0.5f, -1.0f),
+	////	glm::vec3(0.5f, 0.5f, -1.0f),
+	////	glm::vec3(-0.5f, -0.5f, -1.0f),
+	////	glm::vec3(0.5f, 0.5f, -1.0f),
+	////	glm::vec3(-0.5f, -0.5f, -1.0f),
+	////	glm::vec3(0.5f, -0.5f, -1.0f)*/
+	////	//this is not a square
+	////	//front
+	////	/*glm::vec3(-1.0f, -1.0f, 1.0f),
+	////	glm::vec3(1.0f, -1.0f, 1.0f),
+	////	glm::vec3(1.0f, 1.0f, 1.0f),
+	////	glm::vec3(-1.0f, 1.0f, 1.0f),
+	////	//back
+	////	glm::vec3(-1.0f, -1.0f, -1.0f),
+	////	glm::vec3(1.0f, -1.0f, -1.0f),
+	////	glm::vec3(1.0f, 1.0f, -1.0f),
+	////	glm::vec3(-1.0f, 1.0f, -1.0f),*/
 
-	};
+	//};
 	//int number_of_vert = 12;
 
-	int  index_buffer[]{ 0,1,2,1,3,2 }; // abcbcd
+	//int  index_buffer[]{ 0,1,2,1,3,2 }; // abcbdc
 
-	//create and load mesh review this 
-	uint VAO;
-	glGenVertexArrays(1, &VAO);
-	uint VBO;
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//for vbo or vao?
-	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec3), verticies, GL_STATIC_DRAW);//glBufferData(GL_ARRAY_BUFFER, number of verts * sizeof(vertStruct), verticies, GL_STATIC_DRAW);
-	// index buffer object
-	uint IBO;
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), index_buffer, GL_STATIC_DRAW);
+	////create and load mesh review this 
+	//uint VAO;
+	//glGenVertexArrays(1, &VAO);
+	//uint VBO;
+	//glGenBuffers(1, &VBO);
+	//glBindVertexArray(VAO);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	////for vbo or vao?
+	//glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec3), verticies, GL_STATIC_DRAW);//glBufferData(GL_ARRAY_BUFFER, number of verts * sizeof(vertStruct), verticies, GL_STATIC_DRAW);
+	//// index buffer object
+	//uint IBO;
+	//glGenBuffers(1, &IBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), index_buffer, GL_STATIC_DRAW);
 
-	//avo vbo
-	glEnableVertexAttribArray(0); //enables the generic vertex attribute array specified by index
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+	////avo vbo
+	//glEnableVertexAttribArray(0); //enables the generic vertex attribute array specified by index
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+
+	//Mesh meshloader;
+	
+	//meshloader.initaliseQuad();
+	
+	T::OBJMesh objmesh;
+	bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
+	
+	//objmesh.draw();
+	//meshloader.draw();
 	//PMV---------------CAMERA----------------------------------------------------------------
 	//glm::mat4 projection = glm::perspective(1.570f, 16 / 9.0f, 0.1f, 50.0f); //glm ortho camera
 	
@@ -98,8 +111,12 @@ int main()
 	camera cam;
 	//cam::setLookAt(glm::vec3(0, 1, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); //brings up errors
 	//camera::getview();
-	cam.setPerspective(1.5f, 16 / 9.0f, 0.1f, 100.0f);
-	 cam.setLookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	
+	float FOV = 1.570f;
+	float aspectratio = 16 / 9.0f;
+	cam.setPerspective(FOV, aspectratio, 0.1f, 100.0f);
+	cam.setLookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
 	//cam.getview();
 	//camera::setLookAt();,
 	//view();
@@ -225,18 +242,18 @@ int main()
 
 
 	//------------------------------------------------------------------------------
-	glClearColor(1.0, 1.0, 1.0, 1.0); //make background white 
-	glPolygonMode(GL_BACK, GL_LINE);
+//	glClearColor(1.0, 1.0, 1.0, 1.0); //make background white 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while(glfwWindowShouldClose(window) == false && glfwGetKey(window,GLFW_KEY_ESCAPE)!= GLFW_PRESS)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glfwPollEvents();
 		
 		//glm::mat4 pvm = projection * view * model;
 		//glm::mat4 pv = projection * view;
-		glm::vec4 color = glm::vec4(0.8f, 0.0f, 0.2f, 1.0f); //RGBA
+		//glm::vec4 color = glm::vec4(0.8f, 0.0f, 0.2f, 1.0f); //RGBA
 		//rotation 
 		model = glm::rotate(model, 0.016f, glm::vec3(0, 1, 0));
-		
 		
 		
 		glUseProgram(shader_programID);
@@ -252,7 +269,13 @@ int main()
 		glm::vec4 HSVcolor;
 		float hue = timeValue * 10.f; // f(sin)
 		HSVcolor = HSVtoColor(hue);
+		
 
+		//float deltatime = 0.0f;
+		GLfloat currentTime = glfwGetTime();
+		deltatime = currentTime - lastTime;
+		lastTime = currentTime;
+		cam.updatef(deltatime);
 		int vertexcolorlocation = glGetUniformLocation(shader_programID, "color");
 		glUseProgram(shader_programID);
 		glUniform4fv(vertexcolorlocation, 1.0f, glm::value_ptr(HSVcolor));
@@ -260,16 +283,16 @@ int main()
 		//uniform_location = glGetUniformLocation(shader_programID, "color");
 		//glUniformMatrix4fv(uniform_location, 1, glm::value_ptr(color)); 
 		//glUniform4fv(uniform_location, 1, glm::value_ptr(color)); //aaaaaaaaaaaaaaaaaaaaa
+	//	meshloader.draw();
+		objmesh.draw();
 
-
-		glBindVertexArray(VAO);
+		//glBindVertexArray(VAO);
 	//	glDrawArrays(GL_TRIANGLES, 0, number_of_vert);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
-	glDeleteBuffers(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	//glDeleteBuffers(1, &VAO);
+//	glDeleteBuffers(1, &VBO);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
@@ -288,7 +311,7 @@ int main()
 		float primaryChroma = a_value * a_saturation;
 		float secondaryChroma = primaryChroma * (1.0f - abs((a_hue / 60.0f) - (2 *((int)(a_hue / 60.0f) / 2)) - 1.0f)); //the mod of a floating point div is the difference of the numerator and its int div 
 		//float secondaryChroma = primaryChroma * (1.0f - abs((a_hue / 60.0f) % 2) - 1.0f)));
-		//float secondaryChroma = primaryChroma * (1.0f - abs(fmodf((a_hue / 60.0f), 2.0f)) - 1.0f);
+		//float secondaryChroma = primaryChroma * (1.0f - abs(fmod((a_hue / 60.0f), 2.0f)) - 1.0f);
 		float offset = a_value - primaryChroma;
 
 		float rPrime = 0;
@@ -336,7 +359,7 @@ int main()
 
 		// Build the colour from 0.0-1.0f into 0-255 bytes
 		
-		std::cout << a_hue << std::endl; // do this every 3 seconds
+		//std::cout << a_hue << std::endl; 
 		return glm::vec4((rPrime + offset), (gPrime + offset) , (bPrime + offset) , 1.0f);
 	}
 	
