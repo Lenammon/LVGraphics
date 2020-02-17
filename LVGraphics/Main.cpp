@@ -239,11 +239,11 @@ int main()
 		delete[] log;
 	}
 
-
+	glEnable(GL_DEPTH_TEST);
 
 	//------------------------------------------------------------------------------
 //	glClearColor(1.0, 1.0, 1.0, 1.0); //make background white 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while(glfwWindowShouldClose(window) == false && glfwGetKey(window,GLFW_KEY_ESCAPE)!= GLFW_PRESS)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -253,8 +253,8 @@ int main()
 		//glm::mat4 pv = projection * view;
 		//glm::vec4 color = glm::vec4(0.8f, 0.0f, 0.2f, 1.0f); //RGBA
 		//rotation 
-		model = glm::rotate(model, 0.016f, glm::vec3(0, 1, 0));
-		
+		model = glm::rotate(model, 0.0016f, glm::vec3(0, 1, 0));//when no roation is applied the bunny cannot be found 
+		//thats because it rotating around any axis and it collaspses in on itself needs to be exaclty 1 or 0 ^
 		
 		glUseProgram(shader_programID);
 		auto uniform_location = glGetUniformLocation(shader_programID, "projection_view_matrix");
@@ -285,6 +285,7 @@ int main()
 		//glUniform4fv(uniform_location, 1, glm::value_ptr(color)); //aaaaaaaaaaaaaaaaaaaaa
 	//	meshloader.draw();
 		objmesh.draw();
+
 
 		//glBindVertexArray(VAO);
 	//	glDrawArrays(GL_TRIANGLES, 0, number_of_vert);

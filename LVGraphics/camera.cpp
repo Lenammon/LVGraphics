@@ -39,6 +39,10 @@ glm::vec3 camera::getWorldTrans()
 {
     return m_worldtransform[3];
 }
+//glm::vec3 camera::getUpVec()
+//{
+//    return m_worldtransform[1]; //check if correct 
+//}
 void camera::setPosition(glm::vec3 pos)
 {
     m_worldtransform[3] = glm::vec4(pos, 1);

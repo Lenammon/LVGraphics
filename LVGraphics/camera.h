@@ -17,6 +17,7 @@ public:
 	glm::mat4 getprojectionviewtransform();
 	glm::mat4 getMatrices();
 	glm::vec3 getWorldTrans();
+	//glm::vec3 getUpVec(); // check if correct
 	void setPosition(glm::vec3 pos);
 	void setPerspective(float FOV, float aspectRatio, float a_near, float a_far);
 	void setLookAt(glm::vec3 from, glm::vec3 point, glm::vec3 up); //point = to

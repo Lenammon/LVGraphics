@@ -3,7 +3,7 @@
 #include "gl_core_4_5.h"
 #include <string>
 #include <vector>
-
+//#include "Texture.h"
 #include <glfw3.h>
 namespace T {
 
@@ -65,7 +65,8 @@ namespace T {
 
 		void calculateTangents(std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 
-		struct MeshChunk {
+		struct MeshChunk
+		{
 			unsigned int	vao, vbo, ibo;
 			unsigned int	indexCount;
 			int				materialID;
