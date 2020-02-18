@@ -1,12 +1,16 @@
-#version 450
+#version 450 // frag shader
 
-uniform vec4 color = vec4 (1,1,1,1);
-in vec3 pos;
+uniform sampler2D diffuse_texture;
+in vec2 final_texture_coordinates;
+
+//uniform vec4 color = vec4 (1,1,1,1);
+//in vec3 pos;
 
 out vec4 final_color;
 void main()
 {
 	//final_color = color;
 	//final_color = vec4(pos, 1); // normals
-	final_color = vec4(pos.zzz, 1) * 1.0f; //looks like shadows
+	//final_color = vec4(pos.xyz, 1) * 10.0f; //looks like shadows
+	final_color = texture(diffuse_texture, final_texture_coordinates);
 }

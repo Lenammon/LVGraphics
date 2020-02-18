@@ -17,9 +17,9 @@ public:
 struct Vertex // strcuts are easier to copy for raw data
 {
 	glm::vec4 positon; //added to attribute location 0
-	glm::vec4 normal; // added to attribute location 1
-	glm::vec4 color; //rgba
-	//glm::vec2 UV; //textured co-ordination added to attribute location 2
+	glm::vec2 UV; //textured co-ordination added to attribute location 2
+	//glm::vec4 normal; // added to attribute location 1
+	//glm::vec4 color; //rgba
 //	glm::vec4 tangent; //added to attribute location 3
 
 };

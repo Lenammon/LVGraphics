@@ -8,6 +8,8 @@
 #include <iostream>
 #include "Mesh.h"
 #include "OBJMesh.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 using uint = unsigned int;
 glm::vec4 HSVtoColor(float a_hue, float a_saturation = 1.0f, float a_value = 1.0f);
@@ -94,8 +96,8 @@ int main()
 	//glEnableVertexAttribArray(0); //enables the generic vertex attribute array specified by index
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 
-	//Mesh meshloader;
 	
+	//Mesh meshloader;
 	//meshloader.initaliseQuad();
 	
 	T::OBJMesh objmesh;
@@ -241,9 +243,21 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
+	//textures-----
+	uint m_texture;
+	int x, y, n; // width, height ,channel
+
+	unsigned char* Imagedata = stbi_load("..\\Images\\swirl.jpg", &x, &y, &n, 0);
+	glGenTextures(1, &m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, Imagedata);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	stbi_image_free(Imagedata);
 	//------------------------------------------------------------------------------
-//	glClearColor(1.0, 1.0, 1.0, 1.0); //make background white 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glClearColor(0.5,0.5,0.5, 1.0); //make background white 
+	glPolygonMode(GL_BACK, GL_LINE);
 	while(glfwWindowShouldClose(window) == false && glfwGetKey(window,GLFW_KEY_ESCAPE)!= GLFW_PRESS)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -253,8 +267,19 @@ int main()
 		//glm::mat4 pv = projection * view;
 		//glm::vec4 color = glm::vec4(0.8f, 0.0f, 0.2f, 1.0f); //RGBA
 		//rotation 
-		model = glm::rotate(model, 0.0016f, glm::vec3(0, 1, 0));//when no roation is applied the bunny cannot be found 
+
+		model = glm::rotate(model, 0.0f, glm::vec3(0, 1,0));//when no roation is applied the bunny cannot be found 
 		//thats because it rotating around any axis and it collaspses in on itself needs to be exaclty 1 or 0 ^
+
+		//model = glm::rotate(model, 0.016f, glm::vec3(0, 1, 0));
+
+		//float deltatime = 0.0f;
+		GLfloat currentTime = glfwGetTime();
+		deltatime = currentTime - lastTime;
+		lastTime = currentTime;
+		cam.updatef(deltatime);
+		
+
 		
 		glUseProgram(shader_programID);
 		auto uniform_location = glGetUniformLocation(shader_programID, "projection_view_matrix");
@@ -262,20 +287,15 @@ int main()
 
 		uniform_location = glGetUniformLocation(shader_programID, "model_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(model));
-
+		uniform_location = glGetUniformLocation(shader_programID, "time");
+		glUniform1f(uniform_location,currentTime);
 		float timeValue = glfwGetTime();
-		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		float greenValue = (sin(currentTime) / 2.0f) + 0.5f;
 
 		glm::vec4 HSVcolor;
 		float hue = timeValue * 10.f; // f(sin)
 		HSVcolor = HSVtoColor(hue);
 		
-
-		//float deltatime = 0.0f;
-		GLfloat currentTime = glfwGetTime();
-		deltatime = currentTime - lastTime;
-		lastTime = currentTime;
-		cam.updatef(deltatime);
 		int vertexcolorlocation = glGetUniformLocation(shader_programID, "color");
 		glUseProgram(shader_programID);
 		glUniform4fv(vertexcolorlocation, 1.0f, glm::value_ptr(HSVcolor));
@@ -283,12 +303,14 @@ int main()
 		//uniform_location = glGetUniformLocation(shader_programID, "color");
 		//glUniformMatrix4fv(uniform_location, 1, glm::value_ptr(color)); 
 		//glUniform4fv(uniform_location, 1, glm::value_ptr(color)); //aaaaaaaaaaaaaaaaaaaaa
-	//	meshloader.draw();
+
+
+		//meshloader.draw();
 		objmesh.draw();
 
 
 		//glBindVertexArray(VAO);
-	//	glDrawArrays(GL_TRIANGLES, 0, number_of_vert);
+	//	glDrawArrays(GL_TRIANGLES, 0, number_of_vert);s
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(window);
 	}

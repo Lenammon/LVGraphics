@@ -87,7 +87,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glcore;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\glfw\GLFW</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\stb_image;$(SolutionDir)\Dependencies\glcore;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\glfw\GLFW</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glcore;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\glfw\GLFW</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\stb_image;$(SolutionDir)\Dependencies\glcore;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\glfw\GLFW</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +153,7 @@
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Downloads\stb_image.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="free_camera.h" />
     <ClInclude Include="Mesh.h" />

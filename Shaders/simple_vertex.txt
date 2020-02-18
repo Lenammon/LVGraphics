@@ -1,16 +1,25 @@
-#version 450 
-layout(location = 0) in vec3 local_position; 
-layout(location = 1) in vec4 normals; 
+#version 450 // vert shader
+
+layout(location = 0) in vec4 local_position;
+layout(location = 1) in vec2 texture_coordinates;
 
 uniform mat4 projection_view_matrix;
 uniform mat4 model_matrix;
 
+out vec2 final_texture_coordinates;
 
+//uniform vec4 color = vec4 (1,1,1,1);
+//in vec3 pos;
+//out vec4 final_color;
 
-out vec3 pos;
 void main()
 {
-	gl_Position = (projection_view_matrix * model_matrix) * vec4(local_position, 1);
-	
-	pos = normals.xyz; 
+	//final_color = color;
+	//final_color = vec4(pos, 1); // normals
+	//final_color = vec4(pos.zzz, 1) * 1.0f; //looks like shadows
+
+	//final_texture_coordinates = texture_coordinates;
+	gl_Position = (projection_view_matrix * model_matrix) * local_position;
+	//final_texture_coordinates = gl_Position.xy / gl_Position.w;
+	final_texture_coordinates = gl_Position.xy;
 }
