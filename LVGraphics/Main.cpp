@@ -10,6 +10,7 @@
 #include "OBJMesh.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "Shader.h"
 
 using uint = unsigned int;
 glm::vec4 HSVtoColor(float a_hue, float a_saturation = 1.0f, float a_value = 1.0f);
@@ -125,121 +126,15 @@ int main()
 	//look at builds a view transform inverted of(0,0,1 that points in that direction from location 0,0,0 the Z axis for the camera is -Z the "up" direction is (0,1,0)   
 	glm::mat4 model = glm::mat4(1.0f);
 	
-	//loading shaders---------------------------------------------------------------------------------------
-	uint vertex_shader_ID = 0;
-	uint fragment_shader_ID = 0;
-	uint shader_programID = 0;
-
-	std::string shader_data;
-	std::ifstream in_file_stream("..\\Shaders\\simple_vertex.txt", std::ifstream::in);
-
-	std::stringstream string_stream;
-	string_stream.clear();
-	if(in_file_stream.is_open())
-	{
-		string_stream << in_file_stream.rdbuf();
-		shader_data = string_stream.str();
-		in_file_stream.close();
-	}
-	
-	////-------------------------------------------------------------
-	//allocate space for shader program 
-	vertex_shader_ID = glCreateShader(GL_VERTEX_SHADER);
-	//convert to raw char
-	const char* data = shader_data.c_str();
-	//send in the chr* to shader location 
-	glShaderSource(vertex_shader_ID, 1, (const GLchar**)&data, 0);
-	//build
-	glCompileShader(vertex_shader_ID);
-	//error checking 
-	GLint succuess = GL_FALSE;
-	glGetShaderiv(vertex_shader_ID, GL_COMPILE_STATUS, &succuess);
-	if(succuess == GL_FALSE)
-	{
-		printf("vertex shader fail");
-		GLint log_lenth = 0;
-		glGetShaderiv(vertex_shader_ID, GL_INFO_LOG_LENGTH, &log_lenth);
-		//create error buffer
-		char* log = new char[log_lenth];
-		//copy the error buffer
-		glGetShaderInfoLog(vertex_shader_ID, log_lenth, 0, log);
-		//create the error message 
-		std::string error_message(log);
-		error_message += "shader failed to compile";
-		printf(error_message.c_str());
-		//clean up
-		delete[] log;
-	}
+//loading shaders---------------------------------------------------------------------------------------
+	Shader shader("..\\Shaders\\simple_vertex.txt","..\\Shaders\\simple_color.txt" );
 
 
 
-	//fragment shader------------------------------------------------------------------------
 
 
-	//std::string shader_data;
-	std::ifstream in_file_stream_frag("..\\Shaders\\simple_color.txt", std::ifstream::in);
 
-	std::stringstream string_stream_frag;
-	if (in_file_stream_frag.is_open())
-	{
-		string_stream_frag << in_file_stream_frag.rdbuf();
-		shader_data = string_stream_frag.str();
-		in_file_stream_frag.close();
-	}
-	//allocate space for shader program 
-	fragment_shader_ID = glCreateShader(GL_FRAGMENT_SHADER);
-	//convert to raw char
-	//const char* 
-		data = shader_data.c_str();
-	//send in the chr* to shader location 
-	glShaderSource(fragment_shader_ID, 1, (const GLchar**)&data, 0);
-	//build
-	glCompileShader(fragment_shader_ID);
-	//error checking 
-	//GLint succuess = GL_FALSE;
-	glGetShaderiv(fragment_shader_ID, GL_COMPILE_STATUS, &succuess);
-	if (succuess == GL_FALSE)
-	{
-		printf("fragment shader fail");
-		GLint log_lenth = 0;
-		glGetShaderiv(fragment_shader_ID, GL_INFO_LOG_LENGTH, &log_lenth);
-		//create error buffer
-		char* log = new char[log_lenth];
-		//copy the error buffer
-		glGetShaderInfoLog(fragment_shader_ID, log_lenth, 0, log);
-		//create the error message 
-		std::string error_message(log);
-		error_message += "shader failed to compile";
-		printf(error_message.c_str());
-		//clean up
-		delete[] log;
-	}
 
-	//link 
-	shader_programID = glCreateProgram();
-	glAttachShader(shader_programID, vertex_shader_ID);
-	glAttachShader(shader_programID, fragment_shader_ID);
-
-	
-	glLinkProgram(shader_programID);
-	succuess = GL_FALSE;
-	glGetProgramiv(shader_programID, GL_LINK_STATUS, &succuess);
-	if(!succuess)
-	{
-		printf(" link fail");
-		GLint log_lenth = 0;
-		glGetProgramiv(shader_programID, GL_INFO_LOG_LENGTH, &log_lenth);
-		//create error buffer
-		char* log = new char[log_lenth];
-		//copy the error buffer
-		glGetProgramInfoLog(shader_programID, log_lenth, 0, log);
-		//create the error message 
-		std::string error_message(log);
-		error_message += "shader failed to compile";
-		printf(error_message.c_str());
-		//clean up
-		delete[] log;
-	}
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -247,13 +142,15 @@ int main()
 	uint m_texture;
 	int x, y, n; // width, height ,channel
 
-	unsigned char* Imagedata = stbi_load("..\\Images\\swirl.jpg", &x, &y, &n, 0);
+	unsigned char* Imagedata = stbi_load("..\\Images\\swirl.png", &x, &y, &n, 0);
 	glGenTextures(1, &m_texture);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, Imagedata);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, Imagedata);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	stbi_image_free(Imagedata);
 	//------------------------------------------------------------------------------
 	glClearColor(0.5,0.5,0.5, 1.0); //make background white 
@@ -281,13 +178,14 @@ int main()
 		
 
 		
-		glUseProgram(shader_programID);
-		auto uniform_location = glGetUniformLocation(shader_programID, "projection_view_matrix");
+		//glUseProgram(shader_programID);
+		glUseProgram(shader.getshdaerID());
+		auto uniform_location = glGetUniformLocation(shader.getshdaerID(), "projection_view_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(cam.getprojectionviewtransform()));
 
-		uniform_location = glGetUniformLocation(shader_programID, "model_matrix");
+		uniform_location = glGetUniformLocation(shader.getshdaerID(), "model_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(model));
-		uniform_location = glGetUniformLocation(shader_programID, "time");
+		uniform_location = glGetUniformLocation(shader.getshdaerID(), "time");
 		glUniform1f(uniform_location,currentTime);
 		float timeValue = glfwGetTime();
 		float greenValue = (sin(currentTime) / 2.0f) + 0.5f;
@@ -296,8 +194,7 @@ int main()
 		float hue = timeValue * 10.f; // f(sin)
 		HSVcolor = HSVtoColor(hue);
 		
-		int vertexcolorlocation = glGetUniformLocation(shader_programID, "color");
-		glUseProgram(shader_programID);
+		int vertexcolorlocation = glGetUniformLocation(shader.getshdaerID(), "color");
 		glUniform4fv(vertexcolorlocation, 1.0f, glm::value_ptr(HSVcolor));
 		//glUniform4f(vertexcolorlocation, 1.0f, greenValue, 0.0f, 1.0f);
 		//uniform_location = glGetUniformLocation(shader_programID, "color");

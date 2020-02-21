@@ -12,5 +12,5 @@ void main()
 	//final_color = color;
 	//final_color = vec4(pos, 1); // normals
 	//final_color = vec4(pos.xyz, 1) * 10.0f; //looks like shadows
-	final_color = texture(diffuse_texture, final_texture_coordinates);
+	final_color = vec4(texture(diffuse_texture, final_texture_coordinates).xyz,1);
 }
