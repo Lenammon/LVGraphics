@@ -98,11 +98,11 @@ int main()
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 
 	
-	//Mesh meshloader;
-	//meshloader.initaliseQuad();
+	Mesh meshloader;
+	meshloader.initaliseQuad();
 	
-	T::OBJMesh objmesh;
-	bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
+//	T::OBJMesh objmesh;
+	//bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
 	
 	//objmesh.draw();
 	//meshloader.draw();
@@ -127,11 +127,15 @@ int main()
 	glm::mat4 model = glm::mat4(1.0f);
 	
 //loading shaders---------------------------------------------------------------------------------------
-	Shader shader("..\\Shaders\\simple_vertex.txt","..\\Shaders\\simple_color.txt" );
+	//Shader shader("..\\Shaders\\simple_vertex.txt","..\\Shaders\\simple_color.txt" );
+	Shader shader("..\\Shaders\\normal_vertex.txt", "..\\Shaders\\fragment_light.txt");
 
+	struct Light
+	{
+		glm::vec3 direction;
+	};
 
-
-
+	Light m_light;
 
 
 
@@ -152,6 +156,11 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	stbi_image_free(Imagedata);
+
+
+
+	glBindTexture(GL_TEXTURE_2D, 0); //unbinding textures like pointing something to a nullptr
+
 	//------------------------------------------------------------------------------
 	glClearColor(0.5,0.5,0.5, 1.0); //make background white 
 	glPolygonMode(GL_BACK, GL_LINE);
@@ -179,31 +188,90 @@ int main()
 
 		
 		//glUseProgram(shader_programID);
-		glUseProgram(shader.getshdaerID());
+		//glUseProgram(shader.getshdaerID());
+
+		shader.BindShader();
 		auto uniform_location = glGetUniformLocation(shader.getshdaerID(), "projection_view_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(cam.getprojectionviewtransform()));
 
+
 		uniform_location = glGetUniformLocation(shader.getshdaerID(), "model_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(model));
-		uniform_location = glGetUniformLocation(shader.getshdaerID(), "time");
-		glUniform1f(uniform_location,currentTime);
-		float timeValue = glfwGetTime();
-		float greenValue = (sin(currentTime) / 2.0f) + 0.5f;
 
-		glm::vec4 HSVcolor;
-		float hue = timeValue * 10.f; // f(sin)
-		HSVcolor = HSVtoColor(hue);
+		uniform_location = glGetUniformLocation(shader.getshdaerID(), "normal_matrix");
+		glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(glm::mat3(model))));
+
+
+		//-----------------------------------------------------------------
+		auto pmv =	cam.getprojectionviewtransform() * model; //pmv
 		
-		int vertexcolorlocation = glGetUniformLocation(shader.getshdaerID(), "color");
-		glUniform4fv(vertexcolorlocation, 1.0f, glm::value_ptr(HSVcolor));
+
+
+		//light roating 
+		float timel = glfwGetTime();
+		m_light.direction = glm::normalize(glm::vec3(glm::cos(timel * 2), glm::sin(timel * 2) , 0));
+		//m_light.direction = glm::normalize(glm::vec3(glm::sin(timel / 2), 0, 0));
+		//bind shader program 
+
+		//bind light
+
+		//bind transforms for lighting
+
+		//draw
+
+		glBindTexture(GL_TEXTURE_2D, m_texture); //diffuse texture
+		
+
+		int Ia = glGetUniformLocation(shader.getshdaerID(), "Ia");
+		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.25,0.25,0.0))); //ambient lighting
+
+
+		int Id = glGetUniformLocation(shader.getshdaerID(), "Id"); //light diffues 
+		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.75, 0.75, 0.75)));
+
+		int Is = glGetUniformLocation(shader.getshdaerID(), "Is"); //light specular
+		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.80, 0.80, 0.80)));
+
+
+		int Ka = glGetUniformLocation(shader.getshdaerID(), "Ka"); //material ambient
+		glUniform3fv(Ka, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
+
+
+		int Kd = glGetUniformLocation(shader.getshdaerID(), "Kd"); //material diffuse
+		glUniform3fv(Kd, 1.0f, glm::value_ptr(glm::vec3(0.75, 0.75, 0.75)));
+
+		int Ks = glGetUniformLocation(shader.getshdaerID(), "Ks"); // material specular
+		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
+		//m_light.direction
+
+		int LightDir = glGetUniformLocation(shader.getshdaerID(), "lightDirection");
+		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction)));
+
+		int camLocation = glGetUniformLocation(shader.getshdaerID(), "cameraPosition");
+		glUniform3fv(camLocation, 1.0f, glm::value_ptr(glm::vec3(cam.getworldtransform()[3])));
+
+		//specular power
+		uniform_location = glGetUniformLocation(shader.getshdaerID(), "SpecularPower");
+		glUniform1f(uniform_location,20.f);
+		//uniform_location = glGetUniformLocation(shader.getshdaerID(), "time");
+		//glUniform1f(uniform_location,currentTime);
+		//float timeValue = glfwGetTime();
+		//float greenValue = (sin(currentTime) / 2.0f) + 0.5f;
+
+		//glm::vec4 HSVcolor;
+		//float hue = timeValue * 10.f; // f(sin)
+		//HSVcolor = HSVtoColor(hue);
+		//
+		//int vertexcolorlocation = glGetUniformLocation(shader.getshdaerID(), "color");
+		//glUniform4fv(vertexcolorlocation, 1.0f, glm::value_ptr(HSVcolor));
 		//glUniform4f(vertexcolorlocation, 1.0f, greenValue, 0.0f, 1.0f);
 		//uniform_location = glGetUniformLocation(shader_programID, "color");
 		//glUniformMatrix4fv(uniform_location, 1, glm::value_ptr(color)); 
 		//glUniform4fv(uniform_location, 1, glm::value_ptr(color)); //aaaaaaaaaaaaaaaaaaaaa
 
 
-		//meshloader.draw();
-		objmesh.draw();
+		meshloader.draw();
+		//objmesh.draw();
 
 
 		//glBindVertexArray(VAO);

@@ -13,16 +13,18 @@ public:
 
 	Shader(std::string vertex, std::string frag);
 	~Shader();
-	void LoadShader();
-	void Buildshader(); 
-	void ErrorCheckShader(); 
+	//void LoadShader();
+//	void Buildshader(); 
+	void ErrorCheckVertexShader(); 
+	void ErrorCheckFragShader();
 	void ErrorCheckLinker();
-	void Allocatespace();
+	//void Allocatespace();
 	//get complied shader? i dont knwo what i am doing D:
 	unsigned int getshdaerID()
 	{
 		return shader_program_ID;
 	}
+	void BindShader();
 private:
 
 	unsigned int vertex_shader_ID;

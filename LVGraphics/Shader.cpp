@@ -42,7 +42,7 @@ Shader::Shader(std::string vertex, std::string frag)
 	//	//clean up
 	//	delete[] log;
 	//}
-	ErrorCheckShader();
+	ErrorCheckVertexShader();
 
 
 	//fragment shader------------------------------------------------------------------------
@@ -67,25 +67,26 @@ Shader::Shader(std::string vertex, std::string frag)
 	glShaderSource(fragment_shader_ID, 1, (const GLchar**)&data, 0);
 	//build
 	glCompileShader(fragment_shader_ID);
-	//error checking 
-	GLint succuess = GL_FALSE;
-	glGetShaderiv(fragment_shader_ID, GL_COMPILE_STATUS, &succuess);
-	if (succuess == GL_FALSE)
-	{
-		printf("fragment shader fail");
-		GLint log_lenth = 0;
-		glGetShaderiv(fragment_shader_ID, GL_INFO_LOG_LENGTH, &log_lenth);
-		//create error buffer
-		char* log = new char[log_lenth];
-		//copy the error buffer
-		glGetShaderInfoLog(fragment_shader_ID, log_lenth, 0, log);
-		//create the error message 
-		std::string error_message(log);
-		error_message += "shader failed to compile";
-		printf(error_message.c_str());
-		//clean up
-		delete[] log;
-	}
+	////error checking 
+	ErrorCheckFragShader();
+	//GLint succuess = GL_FALSE;
+	//glGetShaderiv(fragment_shader_ID, GL_COMPILE_STATUS, &succuess);
+	//if (succuess == GL_FALSE)
+	//{
+	//	printf("fragment shader fail");
+	//	GLint log_lenth = 0;
+	//	glGetShaderiv(fragment_shader_ID, GL_INFO_LOG_LENGTH, &log_lenth);
+	//	//create error buffer
+	//	char* log = new char[log_lenth];
+	//	//copy the error buffer
+	//	glGetShaderInfoLog(fragment_shader_ID, log_lenth, 0, log);
+	//	//create the error message 
+	//	std::string error_message(log);
+	//	error_message += "shader failed to compile";
+	//	printf(error_message.c_str());
+	//	//clean up
+	//	delete[] log;
+	//}
 
 	ErrorCheckLinker();
 	////link 
@@ -119,11 +120,8 @@ Shader::~Shader()
 {
 
 }
-void Shader::LoadShader() // needs params for the string and std::ifstram::in
-{
 
-}
-void Shader::ErrorCheckShader()// if the shaderdoes not complie this will print out the erros in the console 
+void Shader::ErrorCheckVertexShader()// if the shaderdoes not complie this will print out the erros in the console 
 {
 	//GLint succuess = GL_FALSE; // this needs to be private?
 	//error checking  vertex shader
@@ -146,8 +144,29 @@ void Shader::ErrorCheckShader()// if the shaderdoes not complie this will print 
 		delete[] log;
 	}
 
+}
+void Shader::ErrorCheckFragShader()
+{
 
-
+	//error checking 
+	GLint success = GL_FALSE;
+	glGetShaderiv(fragment_shader_ID, GL_COMPILE_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		printf("fragment shader fail");
+		GLint log_lenth = 0;
+		glGetShaderiv(fragment_shader_ID, GL_INFO_LOG_LENGTH, &log_lenth);
+		//create error buffer
+		char* log = new char[log_lenth];
+		//copy the error buffer
+		glGetShaderInfoLog(fragment_shader_ID, log_lenth, 0, log);
+		//create the error message 
+		std::string error_message(log);
+		error_message += "shader failed to compile";
+		printf(error_message.c_str());
+		//clean up
+		delete[] log;
+	}
 	
 
 }
@@ -180,10 +199,13 @@ void Shader::ErrorCheckLinker()
 	}
 }
 
-void Shader::Buildshader()
-{
 
-}
-void Shader ::Allocatespace() // allcoates space for the shader program 
+
+void Shader::BindShader()
 {
+	//bind the shader 
+	//bind the light direction 
+	//bind th PVM
+	//bind the normal matrix
+	glUseProgram(shader_program_ID);
 }

@@ -1,0 +1,29 @@
+#version 450
+
+layout(location = 0) in vec4 Position;
+layout(location = 1) in vec2 TexCoord;
+layout(location = 2) in vec4 Normal;
+layout(location = 3) in vec4 Tangent;
+
+out vec2 vTexCoord;
+out vec3 vNormal;
+out vec3 vTangent;
+out vec3 vBiTangent;
+out vec4 vPosition;
+
+uniform mat4 projection_view_matrix;
+
+//uniform mat4 projection_view_model;
+uniform mat4 model_matrix;
+uniform mat3 normal_matrix;
+
+void main()
+{
+	vTexCoord = TexCoord;
+	vPosition = model_matrix * Position;
+	vNormal =  normal_matrix * Normal.xyz;
+	vTangent =  normal_matrix * Tangent.xyz;
+	vBiTangent = cross(vNormal, vTangent) * Tangent.w;
+	//gl_Position = projection_view_model * Position;
+	gl_Position = projection_view_matrix * Position;
+}

@@ -20,6 +20,6 @@ void main()
 
 	//final_texture_coordinates = texture_coordinates;
 	gl_Position = (projection_view_matrix * model_matrix) * local_position;
-	//final_texture_coordinates = gl_Position.xy / gl_Position.w;
+	//final_texture_coordinates = gl_Position.xy / gl_Position.w; //looks like a portal
 	final_texture_coordinates = gl_Position.xy;
 }

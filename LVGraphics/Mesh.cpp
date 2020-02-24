@@ -36,6 +36,16 @@ void Mesh::initaliseQuad()
 	verties[3].UV = {1,0};
 	//verties[5].UV = {0,0};
 
+	verties[0].normal = {0,1,0,0};
+	verties[1].normal = {0,1,0,0};
+	verties[2].normal = {0,1,0,0};
+	verties[3].normal = {0,1,0,0};
+
+	verties[0].tangent = {1,0,0,0};
+	verties[1].tangent = {1,0,0,0};
+	verties[2].tangent = {1,0,0,0};
+	verties[3].tangent = {1,0,0,0};
+
 	//triCount = 2;
 	//---------------------------------------------
 	int index_buffer[]{ 0,1,2,1,3,2 };
@@ -53,10 +63,17 @@ void Mesh::initaliseQuad()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(glm::vec4));
 	//kill this guy ------^ 
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) ( 6* sizeof(float))); // needs to have tyhe correct stride
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(10 * sizeof(float)));
 	//unbind buffers
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0); //should this be unbind buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 
 	/*auto window = glfwGetCurrentContext();
 	if(glfwGetKey(window,GLFW_KEY_X))
@@ -82,6 +99,14 @@ void Mesh::draw()
 	{
 		glDrawArrays(GL_TRIANGLES, 0, 3 * triCount);
 	}
+
+
+	////bind 
+	//for(auto)
+	//{
+	//	if(m_)
+	//}
+	
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
