@@ -97,12 +97,13 @@ int main()
 	//glEnableVertexAttribArray(0); //enables the generic vertex attribute array specified by index
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 
+	//______________MESH______________
 	
 	Mesh meshloader;
 	meshloader.initaliseQuad();
 	
-//	T::OBJMesh objmesh;
-	//bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
+	T::OBJMesh objmesh;
+	bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
 	
 	//objmesh.draw();
 	//meshloader.draw();
@@ -157,9 +158,19 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	stbi_image_free(Imagedata);
 
+	uint m_spectexture;
+	 unsigned char* dataimage =  stbi_load("..\\Images\\sadcat.jpg", &x, &y, &n, 0);
+	 glGenTextures(1, &m_spectexture);
+	 glBindTexture(GL_TEXTURE_2D, m_spectexture);
+	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
 
+	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	 stbi_image_free(dataimage);
 
 	glBindTexture(GL_TEXTURE_2D, 0); //unbinding textures like pointing something to a nullptr
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	//------------------------------------------------------------------------------
 	glClearColor(0.5,0.5,0.5, 1.0); //make background white 
@@ -218,14 +229,15 @@ int main()
 		//bind transforms for lighting
 
 		//draw
-
-		glBindTexture(GL_TEXTURE_2D, m_texture); //diffuse texture
 		
-
+		glBindTexture(GL_TEXTURE_2D, m_texture); //diffuse texture
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, m_spectexture);// not working 
+	//	glActiveTexture(GL_TEXTURE2);
 		int Ia = glGetUniformLocation(shader.getshdaerID(), "Ia");
-		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.25,0.25,0.0))); //ambient lighting
+		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.30,0,0.70))); //ambient lighting is purple
 
-
+		
 		int Id = glGetUniformLocation(shader.getshdaerID(), "Id"); //light diffues 
 		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.75, 0.75, 0.75)));
 
@@ -250,6 +262,15 @@ int main()
 		int camLocation = glGetUniformLocation(shader.getshdaerID(), "cameraPosition");
 		glUniform3fv(camLocation, 1.0f, glm::value_ptr(glm::vec3(cam.getworldtransform()[3])));
 
+
+		////glm::vec3 N = glm::normalize(shader.getshdaerID(), "vNormal");
+		//glm::vec3 N = glm::normalize(glm::vec3(shader.getshdaerID(), "vNormal",1));
+		//glm::vec3 T = glm::normalize(glm::vec3(shader.getshdaerID(), "vTangent",1));
+		//glm::vec3 B = glm::normalize(glm::vec3(shader.getshdaerID(), "vBiTangent", 1));
+		//
+		//glm::vec3 L = glm::normalize(glm::vec3(shader.getshdaerID(), "lightDirection", 1));
+
+		//glm::mat4 TBN = glm::mat3(T, B, N);
 		//specular power
 		uniform_location = glGetUniformLocation(shader.getshdaerID(), "SpecularPower");
 		glUniform1f(uniform_location,20.f);
@@ -271,7 +292,7 @@ int main()
 
 
 		meshloader.draw();
-		//objmesh.draw();
+		objmesh.draw();
 
 
 		//glBindVertexArray(VAO);
