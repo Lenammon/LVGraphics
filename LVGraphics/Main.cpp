@@ -11,7 +11,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Shader.h"
-
+#include "Texture.h"
 using uint = unsigned int;
 glm::vec4 HSVtoColor(float a_hue, float a_saturation = 1.0f, float a_value = 1.0f);
 
@@ -102,8 +102,8 @@ int main()
 	Mesh meshloader;
 	meshloader.initaliseQuad();
 	
-	T::OBJMesh objmesh;
-	bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
+	//T::OBJMesh objmesh;
+	//bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
 	
 	//objmesh.draw();
 	//meshloader.draw();
@@ -137,32 +137,53 @@ int main()
 	};
 
 	Light m_light;
-
+	//depth testing disabled
+	//alpha blend darw last
+	//https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glBlendFunc.xml
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
 
 	glEnable(GL_DEPTH_TEST);
 
-	//textures-----
+	//textures-----------------------------------------------------------------------------
 	uint m_texture;
 	int x, y, n; // width, height ,channel
 
-	unsigned char* Imagedata = stbi_load("..\\Images\\swirl.png", &x, &y, &n, 0);
+	unsigned char* Imagedata = stbi_load("..\\Images\\sadcat.jpg", &x, &y, &n, 0);
 	glGenTextures(1, &m_texture);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, Imagedata);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, Imagedata);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	stbi_image_free(Imagedata);
 
+	//Texture mytexture("..\\Images\\sadcat.jpg");
+	//mytexture.getTexture();
+
 	uint m_spectexture;
-	 unsigned char* dataimage =  stbi_load("..\\Images\\sadcat.jpg", &x, &y, &n, 0);
+	//int X, Y, N;
+	 unsigned char* dataimage =  stbi_load("..\\Images\\specular.png", &x, &y, &n, 0);
 	 glGenTextures(1, &m_spectexture);
 	 glBindTexture(GL_TEXTURE_2D, m_spectexture);
-	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
+	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x,y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
+
+	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	 stbi_image_free(dataimage);
+
+glBindTexture(GL_TEXTURE_2D, 0);
+	 uint m_normaltexture;
+	 //int X, Y, N;
+	 dataimage = stbi_load("..\\Images\\normal.png", &x, &y, &n, 0);
+	 glGenTextures(1, &m_normaltexture);
+	 glBindTexture(GL_TEXTURE_2D, m_normaltexture);
+	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
 
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -170,7 +191,7 @@ int main()
 	 stbi_image_free(dataimage);
 
 	glBindTexture(GL_TEXTURE_2D, 0); //unbinding textures like pointing something to a nullptr
-	glBindTexture(GL_TEXTURE_2D, 0);
+	
 
 	//------------------------------------------------------------------------------
 	glClearColor(0.5,0.5,0.5, 1.0); //make background white 
@@ -213,6 +234,8 @@ int main()
 		glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(glm::mat3(model))));
 
 
+
+
 		//-----------------------------------------------------------------
 		auto pmv =	cam.getprojectionviewtransform() * model; //pmv
 		
@@ -220,6 +243,7 @@ int main()
 
 		//light roating 
 		float timel = glfwGetTime();
+		//m_light.direction = glm::vec3(0, 0, 1));
 		m_light.direction = glm::normalize(glm::vec3(glm::cos(timel * 2), glm::sin(timel * 2) , 0));
 		//m_light.direction = glm::normalize(glm::vec3(glm::sin(timel / 2), 0, 0));
 		//bind shader program 
@@ -228,36 +252,51 @@ int main()
 
 		//bind transforms for lighting
 
-		//draw
-		
-		glBindTexture(GL_TEXTURE_2D, m_texture); //diffuse texture
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, m_spectexture);// not working 
-	//	glActiveTexture(GL_TEXTURE2);
-		int Ia = glGetUniformLocation(shader.getshdaerID(), "Ia");
-		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.30,0,0.70))); //ambient lighting is purple
+		uniform_location = glGetUniformLocation(shader.getshdaerID(), "diffuseTexture");
+		glUniform1i(uniform_location, 0);//D: 
 
+		uniform_location = glGetUniformLocation(shader.getshdaerID(), "specularTexture");
+		glUniform1i(uniform_location, 1);
+
+		uniform_location = glGetUniformLocation(shader.getshdaerID(), "normalTexture");
+		glUniform1i(uniform_location, 2);
+
+		//draw
+		///binding texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_texture); //diffuse texture
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, m_spectexture);// not working 
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, m_normaltexture);// not working 
+
+
+		int Ia = glGetUniformLocation(shader.getshdaerID(), "Ia");
+	//	glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.30,0,0.70))); //ambient lighting is purple
+		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
 		
 		int Id = glGetUniformLocation(shader.getshdaerID(), "Id"); //light diffues 
 		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.75, 0.75, 0.75)));
 
 		int Is = glGetUniformLocation(shader.getshdaerID(), "Is"); //light specular
-		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.80, 0.80, 0.80)));
+		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
 
 
 		int Ka = glGetUniformLocation(shader.getshdaerID(), "Ka"); //material ambient
-		glUniform3fv(Ka, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
+		glUniform3fv(Ka, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
 
 		int Kd = glGetUniformLocation(shader.getshdaerID(), "Kd"); //material diffuse
-		glUniform3fv(Kd, 1.0f, glm::value_ptr(glm::vec3(0.75, 0.75, 0.75)));
+		glUniform3fv(Kd, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
 		int Ks = glGetUniformLocation(shader.getshdaerID(), "Ks"); // material specular
-		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
+		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 		//m_light.direction
 
 		int LightDir = glGetUniformLocation(shader.getshdaerID(), "lightDirection");
 		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction)));
+
+
 
 		int camLocation = glGetUniformLocation(shader.getshdaerID(), "cameraPosition");
 		glUniform3fv(camLocation, 1.0f, glm::value_ptr(glm::vec3(cam.getworldtransform()[3])));
@@ -273,7 +312,7 @@ int main()
 		//glm::mat4 TBN = glm::mat3(T, B, N);
 		//specular power
 		uniform_location = glGetUniformLocation(shader.getshdaerID(), "SpecularPower");
-		glUniform1f(uniform_location,20.f);
+		glUniform1f(uniform_location,10.f);
 		//uniform_location = glGetUniformLocation(shader.getshdaerID(), "time");
 		//glUniform1f(uniform_location,currentTime);
 		//float timeValue = glfwGetTime();
@@ -292,7 +331,7 @@ int main()
 
 
 		meshloader.draw();
-		objmesh.draw();
+		//objmesh.draw();
 
 
 		//glBindVertexArray(VAO);
