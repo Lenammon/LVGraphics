@@ -24,7 +24,8 @@ void main()
 	vNormal =  normal_matrix * Normal.xyz;
 	vTangent =  normal_matrix * Tangent.xyz;
 	vBiTangent = cross(vNormal, vTangent);
-
+	
+	
 	//vec3 N = normalize(vNormal);
 	//vec3 T = normalize(vTangent);
 	//vec3 B = normalize(vBiTangent);

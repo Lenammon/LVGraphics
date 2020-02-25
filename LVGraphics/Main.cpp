@@ -97,14 +97,14 @@ int main()
 	//glEnableVertexAttribArray(0); //enables the generic vertex attribute array specified by index
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 
-	//______________MESH______________
+	//______________MESH______________________________________________________________________
 	
 	Mesh meshloader;
 	meshloader.initaliseQuad();
 	
-	//T::OBJMesh objmesh;
-	//bool loaded = objmesh.load("..\\ObjMesh\\Bunny.obj", false);
-	
+	T::OBJMesh objmesh;
+	bool loaded = objmesh.load("..\\ObjMesh\\soulspear.obj", false);
+	//-------------------------------------------------------------------------------------------
 	//objmesh.draw();
 	//meshloader.draw();
 	//PMV---------------CAMERA----------------------------------------------------------------
@@ -158,8 +158,8 @@ int main()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	stbi_image_free(Imagedata);
 
 	//Texture mytexture("..\\Images\\sadcat.jpg");
@@ -294,7 +294,7 @@ glBindTexture(GL_TEXTURE_2D, 0);
 		//m_light.direction
 
 		int LightDir = glGetUniformLocation(shader.getshdaerID(), "lightDirection");
-		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction)));
+		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction)));//how the heck does this work 
 
 
 
@@ -331,7 +331,7 @@ glBindTexture(GL_TEXTURE_2D, 0);
 
 
 		meshloader.draw();
-		//objmesh.draw();
+		objmesh.draw();
 
 
 		//glBindVertexArray(VAO);

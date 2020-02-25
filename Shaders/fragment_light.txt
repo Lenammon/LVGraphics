@@ -46,7 +46,7 @@ void main()
 	float lambertTerm = max(0, dot(N, -L));
 
 	//calculate view vector and reflection vector
-	vec3 V = -normalize(cameraPosition - vPosition.xyz);
+	vec3 V = normalize(cameraPosition - vPosition.xyz);
 	vec3 R = reflect(L, N);
 
 	//calulate speculat term
@@ -66,5 +66,5 @@ void main()
 	FragColour = vec4(ambient + diffuse + specular, 1);
 	//FragColour = vec4(texSpecular + texDiffuse * 0.1 + texNormal ,1);
 	//FragColour = vec4(texNormal, 1);
-	//FragColour = vec4(texNormal  + texDiffuse, 1.0);
+	//FragColour = vec4(vTexCoord, 0.0, 1.0);
 }
