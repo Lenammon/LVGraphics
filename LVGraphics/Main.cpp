@@ -12,6 +12,7 @@
 #include "stb_image.h"
 #include "Shader.h"
 #include "Texture.h"
+#include <crtdbg.h>
 using uint = unsigned int;
 glm::vec4 HSVtoColor(float a_hue, float a_saturation = 1.0f, float a_value = 1.0f);
 
@@ -20,6 +21,7 @@ glm::vec4 HSVtoColor(float a_hue, float a_saturation = 1.0f, float a_value = 1.0
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //checks for memory leaks
 	if (glfwInit() == false) 
 	{
 		return -1; 
@@ -134,9 +136,13 @@ int main()
 	struct Light
 	{
 		glm::vec3 direction;
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
 	};
 
 	Light m_light;
+
 	//depth testing disabled
 	//alpha blend darw last
 	//https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glBlendFunc.xml
@@ -151,15 +157,16 @@ int main()
 	uint m_texture;
 	int x, y, n; // width, height ,channel
 
-	unsigned char* Imagedata = stbi_load("..\\Images\\sadcat.jpg", &x, &y, &n, 0);
+	unsigned char* Imagedata = stbi_load("..\\Images\\soulspear_diffuse.tga", &x, &y, &n, 0);
+
 	glGenTextures(1, &m_texture);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, Imagedata);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	stbi_image_free(Imagedata);
 
 	//Texture mytexture("..\\Images\\sadcat.jpg");
@@ -167,10 +174,10 @@ int main()
 
 	uint m_spectexture;
 	//int X, Y, N;
-	 unsigned char* dataimage =  stbi_load("..\\Images\\specular.png", &x, &y, &n, 0);
+	 unsigned char* dataimage =  stbi_load("..\\Images\\soulspear_specular.tga", &x, &y, &n, 0);
 	 glGenTextures(1, &m_spectexture);
 	 glBindTexture(GL_TEXTURE_2D, m_spectexture);
-	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x,y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
+	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
 
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -180,16 +187,17 @@ int main()
 glBindTexture(GL_TEXTURE_2D, 0);
 	 uint m_normaltexture;
 	 //int X, Y, N;
-	 dataimage = stbi_load("..\\Images\\normal.png", &x, &y, &n, 0);
+	 dataimage = stbi_load("..\\Images\\soulspear_nromal.tga", &x, &y, &n, 0);
 	 glGenTextures(1, &m_normaltexture);
 	 glBindTexture(GL_TEXTURE_2D, m_normaltexture);
-	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
+	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
 
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	 stbi_image_free(dataimage);
-
+	 //stbi_set_flip_vertically_on_load(true);
+	 //stbi_set_unpremultiply_on_load(true);
 	glBindTexture(GL_TEXTURE_2D, 0); //unbinding textures like pointing something to a nullptr
 	
 
@@ -243,9 +251,11 @@ glBindTexture(GL_TEXTURE_2D, 0);
 
 		//light roating 
 		float timel = glfwGetTime();
-		//m_light.direction = glm::vec3(0, 0, 1));
+	//	m_light.direction = glm::vec3(0, 0, 1);
 		m_light.direction = glm::normalize(glm::vec3(glm::cos(timel * 2), glm::sin(timel * 2) , 0));
 		//m_light.direction = glm::normalize(glm::vec3(glm::sin(timel / 2), 0, 0));
+		m_light.diffuse = glm::normalize(glm::vec3(glm::cos(timel / 2), glm::sin(timel / 2), 0));
+
 		//bind shader program 
 
 		//bind light
@@ -271,15 +281,26 @@ glBindTexture(GL_TEXTURE_2D, 0);
 		glBindTexture(GL_TEXTURE_2D, m_normaltexture);// not working 
 
 
-		int Ia = glGetUniformLocation(shader.getshdaerID(), "Ia");
-	//	glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.30,0,0.70))); //ambient lighting is purple
-		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
-		
-		int Id = glGetUniformLocation(shader.getshdaerID(), "Id"); //light diffues 
-		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.75, 0.75, 0.75)));
+		int Ia = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].Ia");
+		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.0, 0.0, 0.0))); //ambient lighting is purple
+	//	glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
 
-		int Is = glGetUniformLocation(shader.getshdaerID(), "Is"); //light specular
+		int Id = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].Id"); //light diffuse 
+		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
+
+		int Is = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].Is"); //light specular
 		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
+
+
+		 Ia = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].Ia");
+		//glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.30,0,0.70))); //ambient lighting is purple
+		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+
+		 Id = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].Id"); //light diffuse 
+		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
+
+		 Is = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].Is"); //light specular
+		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
 
 		int Ka = glGetUniformLocation(shader.getshdaerID(), "Ka"); //material ambient
@@ -293,10 +314,11 @@ glBindTexture(GL_TEXTURE_2D, 0);
 		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 		//m_light.direction
 
-		int LightDir = glGetUniformLocation(shader.getshdaerID(), "lightDirection");
+		int LightDir = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].lightDirection");
 		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction)));//how the heck does this work 
 
-
+		 LightDir = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].lightDirection");
+		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.diffuse)));//how the heck does this work 
 
 		int camLocation = glGetUniformLocation(shader.getshdaerID(), "cameraPosition");
 		glUniform3fv(camLocation, 1.0f, glm::value_ptr(glm::vec3(cam.getworldtransform()[3])));
@@ -328,6 +350,10 @@ glBindTexture(GL_TEXTURE_2D, 0);
 		//uniform_location = glGetUniformLocation(shader_programID, "color");
 		//glUniformMatrix4fv(uniform_location, 1, glm::value_ptr(color)); 
 		//glUniform4fv(uniform_location, 1, glm::value_ptr(color)); //aaaaaaaaaaaaaaaaaaaaa
+
+	/*	float boarderColour[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, boarderColour);*/
+		//stbi_set_flip_vertically_on_load(true);
 
 
 		meshloader.draw();

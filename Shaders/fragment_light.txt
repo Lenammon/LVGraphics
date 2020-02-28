@@ -17,17 +17,25 @@ uniform vec3 Kd; // material diffuse
 uniform vec3 Ks; // material specular
 uniform float SpecularPower;
 
-uniform vec3 Ia; //light ambient
-uniform vec3 Id; //light diffuse
-uniform vec3 Is; //light specular 
-uniform vec3 lightDirection;
+struct DirectionLight
+{
+	vec3 Ia; //light ambient
+	vec3 Id; //light diffuse
+	vec3 Is; //light specular 
+	vec3 lightDirection;
+};
+#define NUM_LIGHTS 2
+uniform DirectionLight dirLights[NUM_LIGHTS];
 
 uniform vec3 cameraPosition;
 
+//struct Light{};
 void main()
 {
 	vec3 N = normalize(vNormal);
-	vec3 L = normalize(lightDirection);
+	
+	vec3 L0 = normalize(dirLights[0].lightDirection);
+	vec3 L1 = normalize(dirLights[1].lightDirection);
 
 	vec3 T = normalize(vTangent);
 	vec3 B = normalize(vBiTangent);
@@ -35,33 +43,49 @@ void main()
 	mat3 TBN = mat3(T,B,N);
 
 
-	vec3 texDiffuse = texture(diffuseTexture, vTexCoord).rgb;
-	vec3 texSpecular = texture(specularTexture,vTexCoord).rgb;
+	vec3 texDiffuse = texture(diffuseTexture, vec2(vTexCoord.x, 1 - vTexCoord.y )).rgb;
+	vec3 texSpecular = texture(specularTexture,vec2(vTexCoord.x, 1 - vTexCoord.y )).rgb;
 	//vec3 texSpecular = vec3(1);
-	vec3 texNormal = texture(normalTexture, vTexCoord).rgb;
+	vec3 texNormal = texture(normalTexture, vec2(vTexCoord.x, 1 - vTexCoord.y )).rgb;
 
 	N = TBN * (texNormal * 2 - 1);
 
-	//calculate lambert term? termination?
-	float lambertTerm = max(0, dot(N, -L));
+	//calculate Lambert term? termination? 
+	float lambertTerm0 = max(0, dot(N, -L0));
+	float lambertTerm1 = max(0, dot(N, -L1));
 
 	//calculate view vector and reflection vector
 	vec3 V = normalize(cameraPosition - vPosition.xyz);
-	vec3 R = reflect(L, N);
+	
+	vec3 R0 = reflect(L0, N);
+	vec3 R1 = reflect(L1, N);
 
-	//calulate speculat term
-	float specularTerm = pow(max(0, dot(R,V)), SpecularPower);
+	//calculate specular term
+	float specularTerm0 = pow(max(0, dot(R0,V)), SpecularPower);
+	
+	float specularTerm1 = pow(max(0, dot(R1,V)), SpecularPower);
 	
 	//calculate each light property
-	//vec3 ambient = Ia * Ka;
-	//vec3 diffuse =  Id * Kd * texDiffuse * lambertTerm;
-	//vec3 specular = Is * Ks * texSpecular * specularTerm;
+	vec3 ambient = dirLights[0].Ia * Ka;
+	vec3 diffuse =  dirLights[0].Id * Kd * texDiffuse * lambertTerm0;
+	vec3 specular = dirLights[0].Is * Ks * texSpecular * specularTerm0;
 
-	vec3 ambient = vec3(0.1);
-	vec3 diffuse = texDiffuse * lambertTerm;
-	vec3 specular = vec3(0.5) * texSpecular * specularTerm;
+	//calculate each light property
+	ambient += dirLights[1].Ia * Ka;
+	diffuse +=  dirLights[1].Id * Kd * texDiffuse * lambertTerm1;
+	specular += dirLights[1].Is * Ks * texSpecular * specularTerm1;
 	
-
+	
+	//vec3 ambient = vec3(0.1);
+	//vec3 diffuse = texDiffuse * lambertTerm;
+	//vec3 specular = vec3(0.5) * texSpecular * specularTerm;
+	
+	//for(int i = 0; i < NUM_LIGHTS; i++)
+	//{
+		//calculate light stuff
+		//ambient += 
+		
+	//}
 
 	FragColour = vec4(ambient + diffuse + specular, 1);
 	//FragColour = vec4(texSpecular + texDiffuse * 0.1 + texNormal ,1);
