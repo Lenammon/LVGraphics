@@ -46,58 +46,10 @@ int main()
 	auto minor = ogl_GetMinorVersion();
 	printf("GL: %i.%i\n", major, minor);
 
-	//mesh data
-	//glm::vec3 verticies[] =
-	//{
-	//	//back
-	//	glm::vec3(-0.5f, 0.5f, 0.0f),
-	//	glm::vec3(-0.5f, -0.5f, 0.0f),
-	////	glm::vec3(0.5f, 0.5f, 0.0f),
-	//	glm::vec3(0.5f, 0.5f, 0.0f),
-	////	glm::vec3(-0.5f, -0.5f, 0.0f),
-	//	glm::vec3(0.5f, -0.5f, 0.0f)
-	////	//front
-	////	/*glm::vec3(-0.5f, 0.5f, -1.0f),
-	////	glm::vec3(0.5f, 0.5f, -1.0f),
-	////	glm::vec3(-0.5f, -0.5f, -1.0f),
-	////	glm::vec3(0.5f, 0.5f, -1.0f),
-	////	glm::vec3(-0.5f, -0.5f, -1.0f),
-	////	glm::vec3(0.5f, -0.5f, -1.0f)*/
-	////	//this is not a square
-	////	//front
-	////	/*glm::vec3(-1.0f, -1.0f, 1.0f),
-	////	glm::vec3(1.0f, -1.0f, 1.0f),
-	////	glm::vec3(1.0f, 1.0f, 1.0f),
-	////	glm::vec3(-1.0f, 1.0f, 1.0f),
-	////	//back
-	////	glm::vec3(-1.0f, -1.0f, -1.0f),
-	////	glm::vec3(1.0f, -1.0f, -1.0f),
-	////	glm::vec3(1.0f, 1.0f, -1.0f),
-	////	glm::vec3(-1.0f, 1.0f, -1.0f),*/
 
-	//};
-	//int number_of_vert = 12;
+	
 
-	//int  index_buffer[]{ 0,1,2,1,3,2 }; // abcbdc
-
-	////create and load mesh review this 
-	//uint VAO;
-	//glGenVertexArrays(1, &VAO);
-	//uint VBO;
-	//glGenBuffers(1, &VBO);
-	//glBindVertexArray(VAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	////for vbo or vao?
-	//glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec3), verticies, GL_STATIC_DRAW);//glBufferData(GL_ARRAY_BUFFER, number of verts * sizeof(vertStruct), verticies, GL_STATIC_DRAW);
-	//// index buffer object
-	//uint IBO;
-	//glGenBuffers(1, &IBO);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), index_buffer, GL_STATIC_DRAW);
-
-	////avo vbo
-	//glEnableVertexAttribArray(0); //enables the generic vertex attribute array specified by index
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+	
 
 	//______________MESH______________________________________________________________________
 	
@@ -120,22 +72,23 @@ int main()
 	
 	float FOV = 1.570f;
 	float aspectratio = 16 / 9.0f;
-	cam.setPerspective(FOV, aspectratio, 0.1f, 100.0f);
-	cam.setLookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	cam.setPerspective(FOV, aspectratio, 0.1f, 100.0f); //near and far
+	cam.setLookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); //from point up
 
 	//cam.getview();
 	//camera::setLookAt();,
 	//view();
 	//look at builds a view transform inverted of(0,0,1 that points in that direction from location 0,0,0 the Z axis for the camera is -Z the "up" direction is (0,1,0)   
+	Shader shader("..\\Shaders\\normal_vertex.txt", "..\\Shaders\\fragment_light.txt"); //bind shader
 	glm::mat4 model = glm::mat4(1.0f);
 	
 //loading shaders---------------------------------------------------------------------------------------
 	//Shader shader("..\\Shaders\\simple_vertex.txt","..\\Shaders\\simple_color.txt" );
-	Shader shader("..\\Shaders\\normal_vertex.txt", "..\\Shaders\\fragment_light.txt");
 
 	struct Light
 	{
-		glm::vec3 direction;
+		glm::vec3 direction0;
+		glm::vec3 direction1;
 		glm::vec3 ambient;
 		glm::vec3 diffuse;
 		glm::vec3 specular;
@@ -157,7 +110,7 @@ int main()
 	uint m_texture;
 	int x, y, n; // width, height ,channel
 
-	unsigned char* Imagedata = stbi_load("..\\Images\\soulspear_diffuse.tga", &x, &y, &n, 0);
+	unsigned char* Imagedata = stbi_load("..\\Images\\soulspear_diffuse.png", &x, &y, &n, 0);
 
 	glGenTextures(1, &m_texture);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
@@ -174,7 +127,7 @@ int main()
 
 	uint m_spectexture;
 	//int X, Y, N;
-	 unsigned char* dataimage =  stbi_load("..\\Images\\soulspear_specular.tga", &x, &y, &n, 0);
+	 unsigned char* dataimage =  stbi_load("..\\Images\\soulspear_specular.png", &x, &y, &n, 0);
 	 glGenTextures(1, &m_spectexture);
 	 glBindTexture(GL_TEXTURE_2D, m_spectexture);
 	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
@@ -184,10 +137,10 @@ int main()
 
 	 stbi_image_free(dataimage);
 
-glBindTexture(GL_TEXTURE_2D, 0);
+//glBindTexture(GL_TEXTURE_2D, 0);
 	 uint m_normaltexture;
 	 //int X, Y, N;
-	 dataimage = stbi_load("..\\Images\\soulspear_nromal.tga", &x, &y, &n, 0);
+	 dataimage = stbi_load("..\\Images\\soulspear_normal.png", &x, &y, &n, 0);
 	 glGenTextures(1, &m_normaltexture);
 	 glBindTexture(GL_TEXTURE_2D, m_normaltexture);
 	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
@@ -198,8 +151,46 @@ glBindTexture(GL_TEXTURE_2D, 0);
 	 stbi_image_free(dataimage);
 	 //stbi_set_flip_vertically_on_load(true);
 	 //stbi_set_unpremultiply_on_load(true);
-	glBindTexture(GL_TEXTURE_2D, 0); //unbinding textures like pointing something to a nullptr
+	//glBindTexture(GL_TEXTURE_2D, 0); //unbinding textures like pointing something to a nullptr
 	
+	uint m_cattexture;
+	//int X, Y, N;
+	dataimage = stbi_load("..\\Images\\sadcat.jpg", &x, &y, &n, 0);
+	glGenTextures(1, &m_cattexture);
+	glBindTexture(GL_TEXTURE_2D, m_cattexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	stbi_image_free(dataimage);
+
+
+	uint m_Stexture;
+	//int X, Y, N;
+	dataimage = stbi_load("..\\Images\\specular.png", &x, &y, &n, 0);
+	glGenTextures(1, &m_Stexture);
+	glBindTexture(GL_TEXTURE_2D, m_Stexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	stbi_image_free(dataimage);
+
+	uint m_bricktexture;
+	//int X, Y, N;
+	dataimage = stbi_load("..\\Images\\normal.png", &x, &y, &n, 0);
+	glGenTextures(1, &m_bricktexture);
+	glBindTexture(GL_TEXTURE_2D, m_bricktexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	stbi_image_free(dataimage);
+
+
 
 	//------------------------------------------------------------------------------
 	glClearColor(0.5,0.5,0.5, 1.0); //make background white 
@@ -228,17 +219,17 @@ glBindTexture(GL_TEXTURE_2D, 0);
 
 		
 		//glUseProgram(shader_programID);
-		//glUseProgram(shader.getshdaerID());
+		//glUseProgram(shader.getshaderID());
 
 		shader.BindShader();
-		auto uniform_location = glGetUniformLocation(shader.getshdaerID(), "projection_view_matrix");
+		auto uniform_location = glGetUniformLocation(shader.getshaderID(), "projection_view_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(cam.getprojectionviewtransform()));
 
 
-		uniform_location = glGetUniformLocation(shader.getshdaerID(), "model_matrix");
+		uniform_location = glGetUniformLocation(shader.getshaderID(), "model_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(model));
 
-		uniform_location = glGetUniformLocation(shader.getshdaerID(), "normal_matrix");
+		uniform_location = glGetUniformLocation(shader.getshaderID(), "normal_matrix");
 		glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(glm::mat3(model))));
 
 
@@ -252,9 +243,9 @@ glBindTexture(GL_TEXTURE_2D, 0);
 		//light roating 
 		float timel = glfwGetTime();
 	//	m_light.direction = glm::vec3(0, 0, 1);
-		m_light.direction = glm::normalize(glm::vec3(glm::cos(timel * 2), glm::sin(timel * 2) , 0));
+		m_light.direction0 = glm::normalize(glm::vec3(glm::cos(timel * 2), glm::sin(timel * 2) , 0));
 		//m_light.direction = glm::normalize(glm::vec3(glm::sin(timel / 2), 0, 0));
-		m_light.diffuse = glm::normalize(glm::vec3(glm::cos(timel / 2), glm::sin(timel / 2), 0));
+		m_light.direction1 = glm::normalize(glm::vec3(glm::cos(timel / 2), glm::sin(timel / 2), 0));
 
 		//bind shader program 
 
@@ -262,80 +253,90 @@ glBindTexture(GL_TEXTURE_2D, 0);
 
 		//bind transforms for lighting
 
-		uniform_location = glGetUniformLocation(shader.getshdaerID(), "diffuseTexture");
+		//draw
+
+		uniform_location = glGetUniformLocation(shader.getshaderID(), "diffuseTexture");
 		glUniform1i(uniform_location, 0);//D: 
 
-		uniform_location = glGetUniformLocation(shader.getshdaerID(), "specularTexture");
+		uniform_location = glGetUniformLocation(shader.getshaderID(), "specularTextureX");
 		glUniform1i(uniform_location, 1);
 
-		uniform_location = glGetUniformLocation(shader.getshdaerID(), "normalTexture");
+		uniform_location = glGetUniformLocation(shader.getshaderID(), "normalTextureX"); //had the same name as the objmesh loader so it was clobering over it 
 		glUniform1i(uniform_location, 2);
 
-		//draw
 		///binding texture
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_texture); //diffuse texture
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, m_spectexture);// not working 
+		glBindTexture(GL_TEXTURE_2D, m_spectexture);
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, m_normaltexture);// not working 
+		glBindTexture(GL_TEXTURE_2D, m_normaltexture);
 
 
-		int Ia = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].Ia");
+
+
+		int Ia = glGetUniformLocation(shader.getshaderID(), "dirLights[0].Ia");
 		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.0, 0.0, 0.0))); //ambient lighting is purple
-	//	glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
+	
 
-		int Id = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].Id"); //light diffuse 
-		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
+		int Id = glGetUniformLocation(shader.getshaderID(), "dirLights[0].Id"); //light diffuse 
+		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
-		int Is = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].Is"); //light specular
+		int Is = glGetUniformLocation(shader.getshaderID(), "dirLights[0].Is"); //light specular color
 		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
 
 
-		 Ia = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].Ia");
+		 Ia = glGetUniformLocation(shader.getshaderID(), "dirLights[1].Ia");
 		//glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3 (0.30,0,0.70))); //ambient lighting is purple
 		glUniform3fv(Ia, 1.0f, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 
-		 Id = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].Id"); //light diffuse 
-		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
+		 Id = glGetUniformLocation(shader.getshaderID(), "dirLights[1].Id"); //light diffuse 
+		glUniform3fv(Id, 1.0f, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
 
-		 Is = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].Is"); //light specular
-		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
+		 Is = glGetUniformLocation(shader.getshaderID(), "dirLights[1].Is"); //light specular colour
+		glUniform3fv(Is, 1.0f, glm::value_ptr(glm::vec3(0.25, 0.25, 0.25)));
 
 
-		int Ka = glGetUniformLocation(shader.getshdaerID(), "Ka"); //material ambient
+		int Ka = glGetUniformLocation(shader.getshaderID(), "Ka"); //material ambient
 		glUniform3fv(Ka, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
 
-		int Kd = glGetUniformLocation(shader.getshdaerID(), "Kd"); //material diffuse
+		int Kd = glGetUniformLocation(shader.getshaderID(), "Kd"); //material diffuse
 		glUniform3fv(Kd, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
-		int Ks = glGetUniformLocation(shader.getshdaerID(), "Ks"); // material specular
-		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
+		int Ks = glGetUniformLocation(shader.getshaderID(), "Ks"); // material specular colour
+		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
 		//m_light.direction
 
-		int LightDir = glGetUniformLocation(shader.getshdaerID(), "dirLights[0].lightDirection");
-		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction)));//how the heck does this work 
+		int LightDir = glGetUniformLocation(shader.getshaderID(), "dirLights[0].lightDirection");
+		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction0)));//how the heck does this work 
 
-		 LightDir = glGetUniformLocation(shader.getshdaerID(), "dirLights[1].lightDirection");
-		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.diffuse)));//how the heck does this work 
+		 LightDir = glGetUniformLocation(shader.getshaderID(), "dirLights[1].lightDirection");
+		glUniform3fv(LightDir, 1.0f, glm::value_ptr((m_light.direction1)));//how the heck does this work 
 
-		int camLocation = glGetUniformLocation(shader.getshdaerID(), "cameraPosition");
+		int camLocation = glGetUniformLocation(shader.getshaderID(), "cameraPosition");
 		glUniform3fv(camLocation, 1.0f, glm::value_ptr(glm::vec3(cam.getworldtransform()[3])));
 
 
-		////glm::vec3 N = glm::normalize(shader.getshdaerID(), "vNormal");
-		//glm::vec3 N = glm::normalize(glm::vec3(shader.getshdaerID(), "vNormal",1));
-		//glm::vec3 T = glm::normalize(glm::vec3(shader.getshdaerID(), "vTangent",1));
-		//glm::vec3 B = glm::normalize(glm::vec3(shader.getshdaerID(), "vBiTangent", 1));
-		//
-		//glm::vec3 L = glm::normalize(glm::vec3(shader.getshdaerID(), "lightDirection", 1));
+		//glm::vec3 N = glm::normalize(shader.getshaderID(), "vNormal");
+	//glm::vec3 N = glm::normalize(glm::vec3(shader.getshaderID(), "vNormal",1));
+		//glm::vec3 T = glm::normalize(glm::vec3(shader.getshaderID(), "vTangent",1));
+		//glm::vec3 B = glm::normalize(glm::vec3(shader.getshaderID(), "vBiTangent", 1));
+		
 
-		//glm::mat4 TBN = glm::mat3(T, B, N);
+		/*glm::vec3 N = glm::normalize(glm::vec3(model, "vNormal", 1));
+
+		glm::vec3 T = glm::normalize(glm::vec3(model, "vTangent", 1));
+		glm::vec3 B = glm::normalize(glm::vec3(model, "vBiTangent", 1));
+
+
+		glm::vec3 L = glm::normalize(glm::vec3(shader.getshaderID(), "lightDirection", 1));
+
+		glm::mat4 TBN = glm::mat3(T, B, N);*/
 		//specular power
-		uniform_location = glGetUniformLocation(shader.getshdaerID(), "SpecularPower");
-		glUniform1f(uniform_location,10.f);
-		//uniform_location = glGetUniformLocation(shader.getshdaerID(), "time");
+		uniform_location = glGetUniformLocation(shader.getshaderID(), "SpecularPower");
+		glUniform1f(uniform_location,20.f);
+		//uniform_location = glGetUniformLocation(shader.getshaderID(), "time");
 		//glUniform1f(uniform_location,currentTime);
 		//float timeValue = glfwGetTime();
 		//float greenValue = (sin(currentTime) / 2.0f) + 0.5f;
@@ -344,7 +345,7 @@ glBindTexture(GL_TEXTURE_2D, 0);
 		//float hue = timeValue * 10.f; // f(sin)
 		//HSVcolor = HSVtoColor(hue);
 		//
-		//int vertexcolorlocation = glGetUniformLocation(shader.getshdaerID(), "color");
+		//int vertexcolorlocation = glGetUniformLocation(shader.getshaderID(), "color");
 		//glUniform4fv(vertexcolorlocation, 1.0f, glm::value_ptr(HSVcolor));
 		//glUniform4f(vertexcolorlocation, 1.0f, greenValue, 0.0f, 1.0f);
 		//uniform_location = glGetUniformLocation(shader_programID, "color");
@@ -356,10 +357,29 @@ glBindTexture(GL_TEXTURE_2D, 0);
 		//stbi_set_flip_vertically_on_load(true);
 
 
-		meshloader.draw();
 		objmesh.draw();
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		//unbind shader
+		//glUseProgram(0); // dont think thats right
+		//bind the shader 
+		//shader.BindShader();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_cattexture);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, m_Stexture);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, m_bricktexture);
 
+		
+		meshloader.draw();
 
+		
 		//glBindVertexArray(VAO);
 	//	glDrawArrays(GL_TRIANGLES, 0, number_of_vert);s
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -20,7 +20,7 @@ public:
 	void ErrorCheckLinker();
 	//void Allocatespace();
 	//get complied shader? i dont knwo what i am doing D:
-	unsigned int getshdaerID()
+	unsigned int getshaderID()
 	{
 		return shader_program_ID;
 	}

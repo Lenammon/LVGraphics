@@ -9,8 +9,8 @@ in vec4 vPosition;
 out vec4 FragColour;
 
 uniform sampler2D diffuseTexture;
-uniform sampler2D specularTexture;
-uniform sampler2D normalTexture;
+uniform sampler2D specularTextureX;
+uniform sampler2D normalTextureX;
 
 uniform vec3 Ka; //material ambient
 uniform vec3 Kd; // material diffuse
@@ -43,10 +43,10 @@ void main()
 	mat3 TBN = mat3(T,B,N);
 
 
-	vec3 texDiffuse = texture(diffuseTexture, vec2(vTexCoord.x, 1 - vTexCoord.y )).rgb;
-	vec3 texSpecular = texture(specularTexture,vec2(vTexCoord.x, 1 - vTexCoord.y )).rgb;
+	vec3 texDiffuse = texture(diffuseTexture, vTexCoord).rgb;
+	vec3 texSpecular = texture(specularTextureX,vec2(vTexCoord.x, vTexCoord.y )).rgb;
 	//vec3 texSpecular = vec3(1);
-	vec3 texNormal = texture(normalTexture, vec2(vTexCoord.x, 1 - vTexCoord.y )).rgb;
+	vec3 texNormal = texture(normalTextureX, vec2(vTexCoord.x, vTexCoord.y )).rgb;
 
 	N = TBN * (texNormal * 2 - 1);
 
@@ -86,9 +86,11 @@ void main()
 		//ambient += 
 		
 	//}
+	//if (FragColour.a < 1)
+	//{discard;}
+	FragColour = vec4((ambient + diffuse + specular) , 1);
 
-	FragColour = vec4(ambient + diffuse + specular, 1);
 	//FragColour = vec4(texSpecular + texDiffuse * 0.1 + texNormal ,1);
-	//FragColour = vec4(texNormal, 1);
+	//FragColour = vec4(texDiffuse, 1);
 	//FragColour = vec4(vTexCoord, 0.0, 1.0);
 }

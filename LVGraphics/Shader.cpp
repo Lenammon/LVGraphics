@@ -1,7 +1,7 @@
 #include "Shader.h"
 Shader::Shader(std::string vertex, std::string frag)
 {
-
+	//vertex shader
 	std::string shader_data;
 	std::ifstream in_file_stream(vertex, std::ifstream::in);
 
@@ -23,25 +23,7 @@ Shader::Shader(std::string vertex, std::string frag)
 	glShaderSource(vertex_shader_ID, 1, (const GLchar**)&data, 0);
 	//build
 	glCompileShader(vertex_shader_ID);
-	//error checking 
-	//GLint succuess = GL_FALSE;
-	//glGetShaderiv(vertex_shader_ID, GL_COMPILE_STATUS, &succuess);
-	//if (succuess == GL_FALSE)
-	//{
-	//	printf("vertex shader fail");
-	//	GLint log_lenth = 0;
-	//	glGetShaderiv(vertex_shader_ID, GL_INFO_LOG_LENGTH, &log_lenth);
-	//	//create error buffer
-	//	char* log = new char[log_lenth];
-	//	//copy the error buffer
-	//	glGetShaderInfoLog(vertex_shader_ID, log_lenth, 0, log);
-	//	//create the error message 
-	//	std::string error_message(log);
-	//	error_message += "shader failed to compile";
-	//	printf(error_message.c_str());
-	//	//clean up
-	//	delete[] log;
-	//}
+	
 	ErrorCheckVertexShader();
 
 
@@ -69,51 +51,12 @@ Shader::Shader(std::string vertex, std::string frag)
 	glCompileShader(fragment_shader_ID);
 	////error checking 
 	ErrorCheckFragShader();
-	//GLint succuess = GL_FALSE;
-	//glGetShaderiv(fragment_shader_ID, GL_COMPILE_STATUS, &succuess);
-	//if (succuess == GL_FALSE)
-	//{
-	//	printf("fragment shader fail");
-	//	GLint log_lenth = 0;
-	//	glGetShaderiv(fragment_shader_ID, GL_INFO_LOG_LENGTH, &log_lenth);
-	//	//create error buffer
-	//	char* log = new char[log_lenth];
-	//	//copy the error buffer
-	//	glGetShaderInfoLog(fragment_shader_ID, log_lenth, 0, log);
-	//	//create the error message 
-	//	std::string error_message(log);
-	//	error_message += "shader failed to compile";
-	//	printf(error_message.c_str());
-	//	//clean up
-	//	delete[] log;
-	//}
+	
 
 	ErrorCheckLinker();
-	////link 
-	//shader_program_ID = glCreateProgram();
-	//glAttachShader(shader_program_ID, vertex_shader_ID);
-	//glAttachShader(shader_program_ID, fragment_shader_ID);
+	
 
-
-	//glLinkProgram(shader_program_ID);
-	//succuess = GL_FALSE;
-	//glGetProgramiv(shader_program_ID, GL_LINK_STATUS, &succuess);
-	//if (!succuess)
-	//{
-	//	printf(" link fail");
-	//	GLint log_lenth = 0;
-	//	glGetProgramiv(shader_program_ID, GL_INFO_LOG_LENGTH, &log_lenth);
-	//	//create error buffer
-	//	char* log = new char[log_lenth];
-	//	//copy the error buffer
-	//	glGetProgramInfoLog(shader_program_ID, log_lenth, 0, log);
-	//	//create the error message 
-	//	std::string error_message(log);
-	//	error_message += "shader failed to compile";
-	//	printf(error_message.c_str());
-	//	//clean up
-	//	delete[] log;
-	//}
+	
 
 }
 Shader::~Shader()

@@ -48,7 +48,7 @@ void Mesh::initaliseQuad()
 
 	//triCount = 2;
 	//---------------------------------------------
-	int index_buffer[]{ 0,1,2,1,3,2 };
+	int index_buffer[]{ 0,1,2,1,3,2 }; // abcbdc
 	triCount = 6;
 	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), &verties[0], GL_STATIC_DRAW); // needs to be fixed-- if the other vectors are in the struct it doesnt work  
 	
