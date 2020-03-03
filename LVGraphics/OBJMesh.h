@@ -14,9 +14,9 @@ namespace T {
 		// a vertex structure for obj files
 		struct Vertex {
 			glm::vec4 position; // added to attrib location 0
-			glm::vec2 texcoord;	// added to attrib location 2
 			glm::vec4 normal;	// added to attrib location 1
 
+			glm::vec2 texcoord;	// added to attrib location 2
 								// normal-mapping data
 			glm::vec4 tangent;	// added to attrib location 3
 		};

@@ -90,7 +90,7 @@ void main()
 	//{discard;}
 	FragColour = vec4((ambient + diffuse + specular) , 1);
 
-	//FragColour = vec4(texSpecular + texDiffuse * 0.1 + texNormal ,1);
+	//ragColour = vec4(diffuse + ambient texDiffuse * 0.1 + texNormal ,1);
 	//FragColour = vec4(texDiffuse, 1);
 	//FragColour = vec4(vTexCoord, 0.0, 1.0);
 }

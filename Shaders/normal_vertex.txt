@@ -1,8 +1,8 @@
 #version 450
 
 layout(location = 0) in vec4 Position;
-layout(location = 1) in vec2 TexCoord;
-layout(location = 2) in vec4 Normal;
+layout(location = 1) in vec4 Normal;
+layout(location = 2) in vec2 TexCoord;
 layout(location = 3) in vec4 Tangent;
 
 out vec2 vTexCoord;
@@ -22,7 +22,7 @@ void main()
 	vTexCoord = TexCoord;
 	vPosition = model_matrix * Position;
 	vNormal =  normal_matrix * Normal.xyz;
-	vTangent =  normal_matrix * Tangent.xyz;
+	vTangent =  (normal_matrix * Tangent.xyz) * Tangent.w;
 	vBiTangent = cross(vNormal, vTangent);
 	
 	

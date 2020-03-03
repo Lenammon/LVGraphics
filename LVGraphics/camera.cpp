@@ -35,14 +35,15 @@ glm::mat4 camera ::getMatrices()
 {
    return m_projectionviewtransform = m_projectiontransform * m_viewtransform;
 }
-glm::vec3 camera::getWorldTrans()
+glm::vec3 camera::getWorldPos()
 {
     return m_worldtransform[3];
 }
-//glm::vec3 camera::getUpVec()
-//{
-//    return m_worldtransform[1]; //check if correct 
-//}
+glm::vec3 camera::getUpVec()
+{
+    return m_worldtransform[1]; 
+
+}
 void camera::setPosition(glm::vec3 pos)
 {
     m_worldtransform[3] = glm::vec4(pos, 1);
@@ -110,7 +111,7 @@ void camera::updatef(float deltatime)
        // setPosition((getworldtransform()[3]) + (glm::vec4(glm::normalize( displacment)), 0.0f)* translation_speed * deltatime );
        // setPosition((getworldtransform(), 0.0f) + displacment * translation_speed * deltatime);
        // getMatrices();
-        setPosition(glm::vec4 (getWorldTrans(), 0.0f) + ((glm::normalize(displacment)/* 0.0f*/) * translation_speed * deltatime)); //this was creating a vec5 when it adds on 0.0f
+        setPosition(glm::vec4 (getWorldPos(), 0.0f) + ((glm::normalize(displacment)/* 0.0f*/) * translation_speed * deltatime)); //this was creating a vec5 when it adds on 0.0f
         m_projectionviewtransform = m_projectiontransform * m_viewtransform; // pv = p * v
     }
     if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))

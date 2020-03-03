@@ -74,14 +74,17 @@ int main()
 	float aspectratio = 16 / 9.0f;
 	cam.setPerspective(FOV, aspectratio, 0.1f, 100.0f); //near and far
 	cam.setLookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); //from point up
-
+	//cam.getWorldPos[1] = glm::vec4(0, 0, 0, 0);
 	//cam.getview();
 	//camera::setLookAt();,
 	//view();
+
 	//look at builds a view transform inverted of(0,0,1 that points in that direction from location 0,0,0 the Z axis for the camera is -Z the "up" direction is (0,1,0)   
 	Shader shader("..\\Shaders\\normal_vertex.txt", "..\\Shaders\\fragment_light.txt"); //bind shader
 	glm::mat4 model = glm::mat4(1.0f);
-	
+	//glm::mat4 models = glm::mat4(1.0f);
+	//model[3] = glm::vec4(1, 0, 0, 1);
+
 //loading shaders---------------------------------------------------------------------------------------
 	//Shader shader("..\\Shaders\\simple_vertex.txt","..\\Shaders\\simple_color.txt" );
 
@@ -180,10 +183,10 @@ int main()
 
 	uint m_bricktexture;
 	//int X, Y, N;
-	dataimage = stbi_load("..\\Images\\normal.png", &x, &y, &n, 0);
+	dataimage = stbi_load("..\\Images\\normal.jpg", &x, &y, &n, 0);
 	glGenTextures(1, &m_bricktexture);
 	glBindTexture(GL_TEXTURE_2D, m_bricktexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -207,7 +210,7 @@ int main()
 
 		model = glm::rotate(model, 0.0f, glm::vec3(0, 1,0));//when no roation is applied the bunny cannot be found 
 		//thats because it rotating around any axis and it collaspses in on itself needs to be exaclty 1 or 0 ^
-
+		//models = glm::rotate(models, 0.0f, glm::vec3(0, 1, 0));
 		//model = glm::rotate(model, 0.016f, glm::vec3(0, 1, 0));
 
 		//float deltatime = 0.0f;
@@ -229,8 +232,9 @@ int main()
 		uniform_location = glGetUniformLocation(shader.getshaderID(), "model_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(model));
 
+		glm::mat3 ok = glm::mat3(glm::vec3(model[0]), glm::vec3(model[1]), glm::vec3(model[2]));
 		uniform_location = glGetUniformLocation(shader.getshaderID(), "normal_matrix");
-		glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(glm::mat3(model))));
+		glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(ok)));
 
 
 
@@ -305,7 +309,7 @@ int main()
 		glUniform3fv(Kd, 1.0f, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
 		int Ks = glGetUniformLocation(shader.getshaderID(), "Ks"); // material specular colour
-		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
+		glUniform3fv(Ks, 1.0f, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		//m_light.direction
 
 		int LightDir = glGetUniformLocation(shader.getshaderID(), "dirLights[0].lightDirection");
@@ -359,12 +363,12 @@ int main()
 
 		objmesh.draw();
 		
-		glActiveTexture(GL_TEXTURE0);
+	/*	glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);*/
 		//unbind shader
 		//glUseProgram(0); // dont think thats right
 		//bind the shader 
