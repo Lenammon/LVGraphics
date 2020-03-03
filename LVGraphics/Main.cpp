@@ -232,10 +232,10 @@ int main()
 		uniform_location = glGetUniformLocation(shader.getshaderID(), "model_matrix");
 		glUniformMatrix4fv(uniform_location, 1, false, glm::value_ptr(model));
 
-		glm::mat3 ok = glm::mat3(glm::vec3(model[0]), glm::vec3(model[1]), glm::vec3(model[2]));
+		//glm::mat3 ok = glm::mat3(glm::vec3(model[0]), glm::vec3(model[1]), glm::vec3(model[2])); ///why 
 		uniform_location = glGetUniformLocation(shader.getshaderID(), "normal_matrix");
-		glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(ok)));
-
+		//glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(ok)));
+		glUniformMatrix3fv(uniform_location, 1, false, glm::value_ptr(glm::inverseTranspose(glm::mat3(model))));
 
 
 
