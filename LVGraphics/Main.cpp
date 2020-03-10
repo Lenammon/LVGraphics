@@ -82,7 +82,7 @@ int main()
 	//look at builds a view transform inverted of(0,0,1 that points in that direction from location 0,0,0 the Z axis for the camera is -Z the "up" direction is (0,1,0)   
 	Shader shader("..\\Shaders\\normal_vertex.txt", "..\\Shaders\\fragment_light.txt"); //bind shader
 	glm::mat4 model = glm::mat4(1.0f);
-	//glm::mat4 models = glm::mat4(1.0f);
+	glm::mat4 model2 = glm::mat4(1.0f);
 	//model[3] = glm::vec4(1, 0, 0, 1);
 
 //loading shaders---------------------------------------------------------------------------------------
@@ -171,10 +171,10 @@ int main()
 
 	uint m_Stexture;
 	//int X, Y, N;
-	dataimage = stbi_load("..\\Images\\specular.png", &x, &y, &n, 0);
+	dataimage = stbi_load("..\\Images\\1.jpg", &x, &y, &n, 0);
 	glGenTextures(1, &m_Stexture);
 	glBindTexture(GL_TEXTURE_2D, m_Stexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataimage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, dataimage);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -339,7 +339,7 @@ int main()
 		glm::mat4 TBN = glm::mat3(T, B, N);*/
 		//specular power
 		uniform_location = glGetUniformLocation(shader.getshaderID(), "SpecularPower");
-		glUniform1f(uniform_location,20.f);
+		glUniform1f(uniform_location,20.0f);
 		//uniform_location = glGetUniformLocation(shader.getshaderID(), "time");
 		//glUniform1f(uniform_location,currentTime);
 		//float timeValue = glfwGetTime();
