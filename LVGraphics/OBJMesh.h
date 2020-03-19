@@ -5,7 +5,7 @@
 #include <vector>
 //#include "Texture.h"
 #include <glfw3.h>
-namespace T {
+namespace OBJMESH {
 
 	// a simple triangle mesh wrapper
 	class OBJMesh {

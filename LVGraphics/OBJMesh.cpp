@@ -2,7 +2,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include <iostream>
-namespace T {
+namespace OBJMESH {
 
 	OBJMesh::~OBJMesh() {
 		for (auto& c : m_meshChunks) {
